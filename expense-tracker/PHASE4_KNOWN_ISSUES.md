@@ -89,7 +89,7 @@ Completed 200 OK in 150ms
    ```ruby
    # Gemfile
    gem 'cuprite'
-   
+
    # spec/support/capybara.rb
    require 'capybara/cuprite'
    Capybara.javascript_driver = :cuprite
@@ -154,10 +154,10 @@ Completed 200 OK in 150ms
 1. `config/environments/test.rb`:
    - Changed `show_exceptions` to :none (reverted to :rescuable)
    - Added `host_authorization` exclusion rule
-   
+
 2. `app/views/transactions/index.html.erb`:
    - Removed Bootstrap theme from paginate helper
-   
+
 3. `db/migrate/20251221151040_fix_transaction_amount_scale.rb`:
    - Created migration to fix amount decimal scale
 

@@ -1,0 +1,153 @@
+<div class="py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-gray-900">Categories</h1>
+      <p class="mt-2 text-sm text-gray-600">Manage your transaction categories</p>
+    </div>
+
+    <% if flash[:notice] %>
+      <div class="mb-4 rounded-md bg-green-50 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-green-800"><%= flash[:notice] %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if flash[:alert] %>
+      <div class="mb-4 rounded-md bg-red-50 p-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm font-medium text-red-800"><%= flash[:alert] %></p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- New Category Form -->
+      <div class="lg:col-span-1">
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-lg font-medium text-gray-900 mb-4">Add New Category</h2>
+            <%= render 'form', category: @category %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Categories List -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Income Categories -->
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-lg font-medium text-green-700 mb-4 flex items-center">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Income Categories
+            </h2>
+            <% if @income_categories.any? %>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <% @income_categories.each do |category| %>
+                  <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-green-300 transition-colors">
+                    <div class="flex items-center space-x-3">
+                      <span class="inline-block w-4 h-4 rounded-full" style="background-color: <%= category.color || '#10B981' %>"></span>
+                      <span class="text-sm font-medium text-gray-900"><%= category.name %></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <%= link_to edit_category_path(category), class: "text-gray-400 hover:text-gray-600" do %>
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                      <% end %>
+                      <%= button_to category_path(category), method: :delete, data: { turbo_confirm: 'Are you sure? This will fail if transactions use this category.' }, class: "text-gray-400 hover:text-red-600" do %>
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-sm text-gray-500">No custom income categories yet.</p>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Expense Categories -->
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-lg font-medium text-red-700 mb-4 flex items-center">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+              </svg>
+              Expense Categories
+            </h2>
+            <% if @expense_categories.any? %>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <% @expense_categories.each do |category| %>
+                  <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-red-300 transition-colors">
+                    <div class="flex items-center space-x-3">
+                      <span class="inline-block w-4 h-4 rounded-full" style="background-color: <%= category.color || '#EF4444' %>"></span>
+                      <span class="text-sm font-medium text-gray-900"><%= category.name %></span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <%= link_to edit_category_path(category), class: "text-gray-400 hover:text-gray-600" do %>
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                      <% end %>
+                      <%= button_to category_path(category), method: :delete, data: { turbo_confirm: 'Are you sure? This will fail if transactions use this category.' }, class: "text-gray-400 hover:text-red-600" do %>
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <p class="text-sm text-gray-500">No custom expense categories yet.</p>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Default Categories (Read-only) -->
+        <div class="bg-gray-50 shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h2 class="text-lg font-medium text-gray-700 mb-2 flex items-center">
+              <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Default Categories
+            </h2>
+            <p class="text-xs text-gray-500 mb-4">These categories are available to all users</p>
+            <% if @default_categories.any? %>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <% @default_categories.each do |category| %>
+                  <div class="flex items-center space-x-2 p-2 bg-white border border-gray-200 rounded">
+                    <span class="inline-block w-3 h-3 rounded-full" style="background-color: <%= category.color || '#6B7280' %>"></span>
+                    <span class="text-xs text-gray-700"><%= category.name %></span>
+                    <span class="text-xs text-gray-400">(<%= category.category_type %>)</span>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

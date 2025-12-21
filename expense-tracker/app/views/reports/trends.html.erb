@@ -1,0 +1,207 @@
+<div class="py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Spending Trends</h1>
+        <p class="mt-2 text-sm text-gray-600">Analyze your financial trends over <%= @months %> months</p>
+      </div>
+
+      <%= link_to "← Back to Dashboard", reports_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+    </div>
+
+    <!-- Month Selector -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <%= form_with url: trends_reports_path, method: :get, class: "flex items-end space-x-4" do |f| %>
+        <div class="flex-1">
+          <%= f.label :months, "Time Period", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= f.select :months,
+              options_for_select([
+                ["Last 3 Months", 3],
+                ["Last 6 Months", 6],
+                ["Last 9 Months", 9],
+                ["Last 12 Months", 12]
+              ], @months),
+              {},
+              class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        </div>
+
+        <%= f.submit "Update", class: "px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" %>
+      <% end %>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+      <!-- Average Monthly Income -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Avg Monthly Income</dt>
+                <dd class="flex items-baseline">
+                  <div class="text-lg font-semibold text-gray-900"><%= number_to_currency(@trends[:averages][:monthly_income]) %></div>
+                  <% if @trends[:growth_rates][:income] %>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold <%= @trends[:growth_rates][:income] >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                      <%= trend_indicator(@trends[:growth_rates][:income]) %>
+                      <%= number_to_percentage(@trends[:growth_rates][:income].abs, precision: 1) %>
+                    </div>
+                  <% end %>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Average Monthly Expenses -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Avg Monthly Expenses</dt>
+                <dd class="flex items-baseline">
+                  <div class="text-lg font-semibold text-gray-900"><%= number_to_currency(@trends[:averages][:monthly_expenses]) %></div>
+                  <% if @trends[:growth_rates][:expenses] %>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold <%= @trends[:growth_rates][:expenses] >= 0 ? 'text-red-600' : 'text-green-600' %>">
+                      <%= trend_indicator(@trends[:growth_rates][:expenses]) %>
+                      <%= number_to_percentage(@trends[:growth_rates][:expenses].abs, precision: 1) %>
+                    </div>
+                  <% end %>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Average Monthly Savings -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Avg Monthly Savings</dt>
+                <dd class="flex items-baseline">
+                  <div class="text-lg font-semibold <%= @trends[:averages][:monthly_savings] >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                    <%= number_to_currency(@trends[:averages][:monthly_savings]) %>
+                  </div>
+                  <% if @trends[:growth_rates][:savings] %>
+                    <div class="ml-2 flex items-baseline text-sm font-semibold <%= @trends[:growth_rates][:savings] >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                      <%= trend_indicator(@trends[:growth_rates][:savings]) %>
+                      <%= number_to_percentage(@trends[:growth_rates][:savings].abs, precision: 1) %>
+                    </div>
+                  <% end %>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Income & Expenses Trend -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Income & Expenses Over Time</h3>
+      <%= line_chart [
+        { name: "Income", data: @trends[:income_trend] },
+        { name: "Expenses", data: @trends[:expense_trend] }
+      ], colors: ["#10B981", "#EF4444"], thousands: ",", prefix: "$", curve: false %>
+    </div>
+
+    <!-- Savings Trend -->
+    <div class="bg-white shadow rounded-lg p-6 mb-6">
+      <h3 class="text-lg font-medium text-gray-900 mb-4">Net Savings Trend</h3>
+      <%= area_chart @trends[:savings_trend],
+          colors: ["#3B82F6"],
+          thousands: ",",
+          prefix: "$",
+          curve: false %>
+    </div>
+
+    <!-- Category Trends -->
+    <% if @trends[:category_trends].any? %>
+      <div class="bg-white shadow rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Top Category Trends</h3>
+        <%= line_chart @trends[:category_trends].map { |cat, data|
+          { name: cat, data: data }
+        }, thousands: ",", prefix: "$", curve: false %>
+      </div>
+    <% end %>
+
+    <!-- Monthly Breakdown Table -->
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h3 class="text-lg font-medium text-gray-900">Monthly Breakdown</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Income</th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Expenses</th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Net Savings</th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Savings Rate</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% @trends[:monthly_trends].each do |month_data| %>
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <%= month_data[:month] %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600">
+                  <%= number_to_currency(month_data[:income]) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600">
+                  <%= number_to_currency(month_data[:expenses]) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium <%= month_data[:net] >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                  <%= number_to_currency(month_data[:net]) %>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
+                  <% savings_rate = month_data[:income] > 0 ? ((month_data[:net] / month_data[:income]) * 100).round(2) : 0 %>
+                  <%= number_to_percentage(savings_rate, precision: 1) %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot class="bg-gray-50">
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">Averages</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-green-600">
+                <%= number_to_currency(@trends[:averages][:monthly_income]) %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-red-600">
+                <%= number_to_currency(@trends[:averages][:monthly_expenses]) %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold <%= @trends[:averages][:monthly_savings] >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                <%= number_to_currency(@trends[:averages][:monthly_savings]) %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-bold text-gray-900">
+                <% avg_savings_rate = @trends[:averages][:monthly_income] > 0 ? ((@trends[:averages][:monthly_savings] / @trends[:averages][:monthly_income]) * 100).round(2) : 0 %>
+                <%= number_to_percentage(avg_savings_rate, precision: 1) %>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

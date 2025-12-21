@@ -143,19 +143,19 @@ Rails application structure at repository root (expense-tracker/)
 
 ### Tests for User Story 2 (TDD - Write First, Ensure FAIL)
 
-- [ ] T061 [P] [US2] Create Category model spec in spec/models/category_spec.rb (validations, uniqueness, default categories)
+- [X] T061 [P] [US2] Create Category model spec in spec/models/category_spec.rb (validations, uniqueness, default categories)
 - [ ] T062 [P] [US2] Create categories request spec in spec/requests/categories_spec.rb (index, create, update, destroy)
 - [ ] T063 [P] [US2] Create categorization system spec in spec/system/categorization_spec.rb (E2E assign, bulk assign, filter)
 
 ### Implementation for User Story 2
 
-- [ ] T064 [P] [US2] Create CategoriesController in app/controllers/categories_controller.rb (index, create, update, destroy)
-- [ ] T065 [P] [US2] Create categories index view in app/views/categories/index.html.erb with color-coded badges
-- [ ] T066 [P] [US2] Create category form partial in app/views/categories/_form.html.erb with color picker
+- [X] T064 [P] [US2] Create CategoriesController in app/controllers/categories_controller.rb (index, create, update, destroy)
+- [X] T065 [P] [US2] Create categories index view in app/views/categories/index.html.erb with color-coded badges
+- [X] T066 [P] [US2] Create category form partial in app/views/categories/_form.html.erb with color picker
 - [ ] T067 [US2] Create CategoryBadgeComponent in app/components/category_badge_component.rb (ViewComponent for colored category display)
-- [ ] T068 [US2] Add category dropdown to transaction form in app/views/transactions/_form.html.erb
+- [X] T068 [US2] Add category dropdown to transaction form in app/views/transactions/_form.html.erb (already implemented)
 - [ ] T069 [US2] Create Stimulus controller for category filter in app/javascript/controllers/filter_controller.js
-- [ ] T070 [US2] Create FactoryBot factory for Category in spec/factories/categories.rb
+- [X] T070 [US2] Create FactoryBot factory for Category in spec/factories/categories.rb (already exists)
 - [ ] T071 [US2] Add bulk categorization action to TransactionsController (bulk_update)
 - [ ] T072 [US2] Implement custom category creation/deletion with transaction reassignment logic
 - [ ] T073 [US2] Add category filtering to transactions index view

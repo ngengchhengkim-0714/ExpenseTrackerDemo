@@ -1,0 +1,164 @@
+<div class="py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Financial Reports</h1>
+        <p class="mt-2 text-sm text-gray-600">Analyze your spending patterns and trends</p>
+      </div>
+
+      <div class="flex space-x-3">
+        <%= link_to "Monthly Report", monthly_reports_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+        <%= link_to "Trends", trends_reports_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" %>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <!-- Total Income -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Income</dt>
+                <dd class="text-lg font-semibold text-gray-900"><%= number_to_currency(@summary[:total_income]) %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Expenses -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Total Expenses</dt>
+                <dd class="text-lg font-semibold text-gray-900"><%= number_to_currency(@summary[:total_expenses]) %></dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Net Savings -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Net Savings</dt>
+                <dd class="text-lg font-semibold <%= @summary[:net_savings] >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                  <%= number_to_currency(@summary[:net_savings]) %>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Savings Rate -->
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">Savings Rate</dt>
+                <dd class="text-lg font-semibold text-gray-900"><%= @summary[:savings_rate] %>%</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Income by Category -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Income by Category</h3>
+        <% if @summary[:income_by_category].any? %>
+          <%= pie_chart @summary[:income_by_category].to_h, colors: ["#10B981", "#34D399", "#6EE7B7", "#A7F3D0", "#D1FAE5"] %>
+        <% else %>
+          <p class="text-sm text-gray-500 text-center py-8">No income data for this period</p>
+        <% end %>
+      </div>
+
+      <!-- Expenses by Category -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Expenses by Category</h3>
+        <% if @summary[:expenses_by_category].any? %>
+          <%= pie_chart @summary[:expenses_by_category].to_h, colors: ["#EF4444", "#F87171", "#FCA5A5", "#FECACA", "#FEE2E2"] %>
+        <% else %>
+          <p class="text-sm text-gray-500 text-center py-8">No expense data for this period</p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Top Expense Categories -->
+    <% if @summary[:top_expense_categories].any? %>
+      <div class="mt-6 bg-white shadow rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Top 5 Expense Categories</h3>
+        <div class="space-y-3">
+          <% @summary[:top_expense_categories].each do |category_name, amount| %>
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-700"><%= category_name %></span>
+              <div class="flex items-center space-x-3">
+                <div class="w-48 bg-gray-200 rounded-full h-2">
+                  <% percentage = (@summary[:total_expenses] > 0 ? (amount / @summary[:total_expenses] * 100) : 0) %>
+                  <div class="bg-red-600 h-2 rounded-full" style="width: <%= percentage %>%"></div>
+                </div>
+                <span class="text-sm text-gray-900 w-24 text-right"><%= number_to_currency(amount) %></span>
+                <span class="text-xs text-gray-500 w-16 text-right"><%= number_to_percentage(percentage, precision: 1) %></span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Transaction Stats -->
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white shadow rounded-lg p-6">
+        <h4 class="text-sm font-medium text-gray-500 mb-2">Transaction Count</h4>
+        <div class="flex items-baseline space-x-3">
+          <span class="text-2xl font-bold text-gray-900"><%= @summary[:transaction_count][:total] %></span>
+          <span class="text-sm text-gray-500">
+            (<%= @summary[:transaction_count][:income] %> income, <%= @summary[:transaction_count][:expense] %> expense)
+          </span>
+        </div>
+      </div>
+
+      <div class="bg-white shadow rounded-lg p-6">
+        <h4 class="text-sm font-medium text-gray-500 mb-2">Average Income</h4>
+        <p class="text-2xl font-bold text-green-600"><%= number_to_currency(@summary[:average_transaction][:income]) %></p>
+      </div>
+
+      <div class="bg-white shadow rounded-lg p-6">
+        <h4 class="text-sm font-medium text-gray-500 mb-2">Average Expense</h4>
+        <p class="text-2xl font-bold text-red-600"><%= number_to_currency(@summary[:average_transaction][:expense]) %></p>
+      </div>
+    </div>
+  </div>
+</div>
