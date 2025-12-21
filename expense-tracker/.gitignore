@@ -1,3 +1,71 @@
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# Rails temporary files
 tmp/
 log/
+storage/
+public/uploads/
+
+# Bundler
+.bundle/
+vendor/bundle/
+
+# RSpec/Test coverage
+coverage/
+spec/examples.txt
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Node modules (for Tailwind)
+node_modules/
+
+# Ruby version manager
+.ruby-version
+.ruby-gemset
+
+# Database files
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-*
+
+# Rails credentials
+/config/master.key
+/config/credentials/*.key
+
+# Asset compilation
+/public/assets
+/public/packs
+/public/packs-test
+/app/assets/builds/*
+!/app/assets/builds/.keep
+
+# Yarn
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity
+
+# PID files
+/tmp/pids/*
+!/tmp/pids/.keep
+
+# Cache
+/tmp/cache/*
+!/tmp/cache/.keep
+
+# Storage
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
