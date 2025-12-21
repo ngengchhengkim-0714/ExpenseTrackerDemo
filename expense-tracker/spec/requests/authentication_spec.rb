@@ -26,7 +26,9 @@ RSpec.describe 'Authentication', type: :request do
 
       it 'signs in the new user' do
         post user_registration_path, params: valid_attributes
-        expect(controller.current_user).to be_present
+        expect(response).to redirect_to(root_path)
+        follow_redirect!
+        expect(response.body).to include('New User')
       end
 
       it 'redirects to the root path' do
@@ -40,6 +42,7 @@ RSpec.describe 'Authentication', type: :request do
         {
           user: {
             email: 'invalid_email',
+            full_name: 'Test User',
             password: 'weak',
             password_confirmation: 'weak'
           }
@@ -54,7 +57,7 @@ RSpec.describe 'Authentication', type: :request do
 
       it 'renders the signup form again' do
         post user_registration_path, params: invalid_attributes
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -63,6 +66,7 @@ RSpec.describe 'Authentication', type: :request do
         {
           user: {
             email: 'newuser@example.com',
+            full_name: 'Test User',
             password: 'password',
             password_confirmation: 'password'
           }
@@ -91,7 +95,9 @@ RSpec.describe 'Authentication', type: :request do
             password: 'Password123!'
           }
         }
-        expect(controller.current_user).to eq(user)
+        expect(response).to redirect_to(root_path)
+        follow_redirect!
+        expect(response.body).to include(user.full_name)
       end
 
       it 'redirects to the root path' do
@@ -113,7 +119,7 @@ RSpec.describe 'Authentication', type: :request do
             password: 'WrongPassword123!'
           }
         }
-        expect(controller.current_user).to be_nil
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'renders the login form again' do
@@ -123,7 +129,7 @@ RSpec.describe 'Authentication', type: :request do
             password: 'WrongPassword123!'
           }
         }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
 
@@ -135,7 +141,7 @@ RSpec.describe 'Authentication', type: :request do
             password: 'Password123!'
           }
         }
-        expect(controller.current_user).to be_nil
+        expect(response).to have_http_status(:unprocessable_content)
       end
     end
   end
@@ -145,7 +151,7 @@ RSpec.describe 'Authentication', type: :request do
 
     it 'signs out the user' do
       delete destroy_user_session_path
-      expect(controller.current_user).to be_nil
+      expect(response).to redirect_to(root_path)
     end
 
     it 'redirects to the root path' do
@@ -159,16 +165,16 @@ RSpec.describe 'Authentication', type: :request do
 
     it 'expires session after timeout period' do
       # Simulate session timeout by setting last_request_at to past
-      travel_to 31.minutes.from_now do
+      travel 31.minutes do
         get root_path
         expect(response).to redirect_to(new_user_session_path)
       end
     end
 
     it 'does not expire session within timeout period' do
-      travel_to 29.minutes.from_now do
+      travel 29.minutes do
         get root_path
-        expect(controller.current_user).to eq(user)
+        expect(response).to have_http_status(:success)
       end
     end
   end

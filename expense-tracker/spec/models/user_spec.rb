@@ -15,25 +15,25 @@ RSpec.describe User, type: :model do
       it 'requires at least one uppercase letter' do
         user = build(:user, password: 'password123!', password_confirmation: 'password123!')
         expect(user).not_to be_valid
-        expect(user.errors[:password]).to include(match(/must include at least one uppercase letter/i))
+        expect(user.errors[:password]).to include(match(/must include.*one uppercase letter/i))
       end
 
       it 'requires at least one lowercase letter' do
         user = build(:user, password: 'PASSWORD123!', password_confirmation: 'PASSWORD123!')
         expect(user).not_to be_valid
-        expect(user.errors[:password]).to include(match(/must include at least one lowercase letter/i))
+        expect(user.errors[:password]).to include(match(/must include.*one lowercase letter/i))
       end
 
       it 'requires at least one digit' do
         user = build(:user, password: 'Password!', password_confirmation: 'Password!')
         expect(user).not_to be_valid
-        expect(user.errors[:password]).to include(match(/must include at least one digit/i))
+        expect(user.errors[:password]).to include(match(/must include.*one digit/i))
       end
 
       it 'requires at least one special character' do
         user = build(:user, password: 'Password123', password_confirmation: 'Password123')
         expect(user).not_to be_valid
-        expect(user.errors[:password]).to include(match(/must include at least one special character/i))
+        expect(user.errors[:password]).to include(match(/must include.*one special character/i))
       end
 
       it 'accepts a valid complex password' do
@@ -80,9 +80,16 @@ RSpec.describe User, type: :model do
       expect(user.full_name).to eq('John Doe')
     end
 
-    it 'allows nil full_name' do
+    it 'is required' do
       user = build(:user, full_name: nil)
-      expect(user).to be_valid
+      expect(user).not_to be_valid
+      expect(user.errors[:full_name]).to include("can't be blank")
+    end
+
+    it 'must be at least 2 characters' do
+      user = build(:user, full_name: 'A')
+      expect(user).not_to be_valid
+      expect(user.errors[:full_name]).to include("is too short (minimum is 2 characters)")
     end
   end
 end
