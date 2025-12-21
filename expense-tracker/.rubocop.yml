@@ -1,0 +1,80 @@
+# RuboCop Configuration for Personal Finance Tracker
+# Follows Rails community best practices
+
+require:
+  - rubocop-rails
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.3
+  Exclude:
+    - 'db/schema.rb'
+    - 'db/migrate/**/*'
+    - 'bin/**/*'
+    - 'config/**/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'tmp/**/*'
+    - 'log/**/*'
+  SuggestExtensions: false
+
+# Rails-specific configurations
+Rails:
+  Enabled: true
+
+# Style Guide URLs
+Rails:
+  StyleGuideBaseURL: https://rails.rubystyle.guide
+
+# Metrics
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+    - 'config/routes.rb'
+    - 'config/environments/*'
+
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - 'db/seeds.rb'
+    - 'spec/**/*'
+
+# Layout
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'db/seeds.rb'
+    - 'spec/**/*'
+
+# Style preferences
+Style/Documentation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+# Rails-specific cop configurations
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'db/seeds.rb'
+    - 'spec/**/*'
+
+Rails/BulkChangeTable:
+  Enabled: true
+
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - test
+    - production

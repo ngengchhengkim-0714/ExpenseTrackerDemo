@@ -27,19 +27,19 @@ Rails application structure at repository root (expense-tracker/)
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Initialize Rails 7.1.2 application with Ruby 3.3.0 using `rails new expense-tracker --database=mysql --css=tailwind --javascript=importmap`
-- [ ] T002 [P] Add core gems to Gemfile: devise 4.9, rspec-rails 6.1, capybara 3.39, factory_bot_rails 6.4, faker 3.2, chartkick 5.0, groupdate 6.4
-- [ ] T003 [P] Add development/test gems to Gemfile: rubocop 1.60, bullet, simplecov
-- [ ] T004 Run `bundle install` to install all dependencies
-- [ ] T005 [P] Configure RuboCop with .rubocop.yml (Rails style guide)
-- [ ] T006 [P] Initialize RSpec with `rails generate rspec:install`
-- [ ] T007 [P] Configure SimpleCov in spec/rails_helper.rb for 80%+ coverage tracking
-- [ ] T008 [P] Configure FactoryBot in spec/rails_helper.rb
-- [ ] T009 [P] Configure Bullet gem in config/environments/development.rb for N+1 query detection
-- [ ] T010 Create Docker configuration: Dockerfile for Rails app
-- [ ] T011 Create docker-compose.yml with web service (Rails) and db service (MySQL 8.0)
-- [ ] T012 Create .dockerignore file
-- [ ] T013 Configure config/database.yml for MySQL2 adapter with Docker environment variables
+- [X] T001 Initialize Rails 7.1.2 application with Ruby 3.3.0 using `rails new expense-tracker --database=mysql --css=tailwind --javascript=importmap`
+- [X] T002 [P] Add core gems to Gemfile: devise 4.9, rspec-rails 6.1, capybara 3.39, factory_bot_rails 6.4, faker 3.2, chartkick 5.0, groupdate 6.4
+- [X] T003 [P] Add development/test gems to Gemfile: rubocop 1.60, bullet, simplecov
+- [X] T004 Run `bundle install` to install all dependencies
+- [X] T005 [P] Configure RuboCop with .rubocop.yml (Rails style guide)
+- [X] T006 [P] Initialize RSpec with `rails generate rspec:install`
+- [X] T007 [P] Configure SimpleCov in spec/rails_helper.rb for 80%+ coverage tracking
+- [X] T008 [P] Configure FactoryBot in spec/rails_helper.rb
+- [X] T009 [P] Configure Bullet gem in config/environments/development.rb for N+1 query detection
+- [X] T010 Create Docker configuration: Dockerfile for Rails app
+- [X] T011 Create docker-compose.yml with web service (Rails) and db service (MySQL 8.0)
+- [X] T012 Create .dockerignore file
+- [X] T013 Configure config/database.yml for MySQL2 adapter with Docker environment variables
 
 ---
 
