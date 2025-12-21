@@ -1,0 +1,385 @@
+# Transactions API Contracts
+
+**Version**: 1.0
+**Base URL**: `/transactions`
+
+## Overview
+
+CRUD endpoints for managing financial transactions (income and expenses). All endpoints require authentication.
+
+---
+
+## GET /transactions
+**List User Transactions**
+
+### Request
+
+**Headers**:
+- `Cookie: session_id=...` (authenticated)
+
+**Query Parameters**:
+- `page` (integer, optional): Page number, default 1
+- `per_page` (integer, optional): Items per page, default 50, max 100
+- `type` (string, optional): Filter by 'income' or 'expense'
+- `category_id` (integer, optional): Filter by category ID
+- `start_date` (date, optional): Filter from date (YYYY-MM-DD)
+- `end_date` (date, optional): Filter to date (YYYY-MM-DD)
+- `sort` (string, optional): Sort by 'date', 'amount', 'created_at' (default: 'date')
+- `order` (string, optional): 'asc' or 'desc' (default: 'desc')
+
+**Example**: `/transactions?type=expense&category_id=5&start_date=2025-12-01&end_date=2025-12-31&page=1`
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "transactions": [
+    {
+      "id": 1,
+      "amount": "50.00",
+      "description": "Weekly groceries",
+      "transaction_type": "expense",
+      "date": "2025-12-20",
+      "category": {
+        "id": 1,
+        "name": "Groceries",
+        "color": "#4CAF50"
+      },
+      "created_at": "2025-12-20T14:30:00Z",
+      "updated_at": "2025-12-20T14:30:00Z"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "total_pages": 5,
+    "total_count": 250,
+    "per_page": 50
+  }
+}
+```
+
+---
+
+## GET /transactions/:id
+**Get Single Transaction**
+
+### Request
+
+**Headers**:
+- `Cookie: session_id=...` (authenticated)
+
+**Path Parameters**:
+- `id` (integer, required): Transaction ID
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "id": 1,
+  "amount": "50.00",
+  "description": "Weekly groceries",
+  "transaction_type": "expense",
+  "date": "2025-12-20",
+  "category": {
+    "id": 1,
+    "name": "Groceries",
+    "color": "#4CAF50",
+    "category_type": "expense"
+  },
+  "created_at": "2025-12-20T14:30:00Z",
+  "updated_at": "2025-12-20T14:30:00Z"
+}
+```
+
+**Error (404 Not Found)**:
+```json
+{
+  "error": "Transaction not found"
+}
+```
+
+**Error (403 Forbidden)**:
+```json
+{
+  "error": "You don't have permission to access this transaction"
+}
+```
+
+---
+
+## POST /transactions
+**Create New Transaction**
+
+### Request
+
+**Headers**:
+- `Content-Type: application/json`
+- `Cookie: session_id=...` (authenticated)
+
+**Body**:
+```json
+{
+  "transaction": {
+    "amount": "50.00",
+    "description": "Weekly groceries",
+    "transaction_type": "expense",
+    "date": "2025-12-20",
+    "category_id": 1
+  }
+}
+```
+
+### Response
+
+**Success (201 Created)**:
+```json
+{
+  "id": 1,
+  "amount": "50.00",
+  "description": "Weekly groceries",
+  "transaction_type": "expense",
+  "date": "2025-12-20",
+  "category": {
+    "id": 1,
+    "name": "Groceries",
+    "color": "#4CAF50"
+  },
+  "created_at": "2025-12-20T14:30:00Z"
+}
+```
+
+**Error (422 Unprocessable Entity)**:
+```json
+{
+  "errors": {
+    "amount": ["must be greater than 0"],
+    "date": ["cannot be more than 7 days in the future"],
+    "category": ["type doesn't match transaction type"]
+  }
+}
+```
+
+### Validations
+- Amount: required, > 0, <= 999999.99
+- Transaction type: required, must be 'income' or 'expense'
+- Date: required, not more than 7 days in future
+- Category ID: required, must exist and belong to user or be default
+- Category type must match transaction type (or be 'both')
+- Description: optional, max 500 characters
+
+---
+
+## PUT /transactions/:id
+**Update Transaction**
+
+### Request
+
+**Headers**:
+- `Content-Type: application/json`
+- `Cookie: session_id=...` (authenticated)
+
+**Path Parameters**:
+- `id` (integer, required): Transaction ID
+
+**Body** (partial updates allowed):
+```json
+{
+  "transaction": {
+    "amount": "55.00",
+    "description": "Weekly groceries (updated)",
+    "category_id": 2
+  }
+}
+```
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "id": 1,
+  "amount": "55.00",
+  "description": "Weekly groceries (updated)",
+  "transaction_type": "expense",
+  "date": "2025-12-20",
+  "category": {
+    "id": 2,
+    "name": "Shopping",
+    "color": "#795548"
+  },
+  "updated_at": "2025-12-20T15:00:00Z"
+}
+```
+
+**Error (404 Not Found)** / **(403 Forbidden)** / **(422 Validation)**
+
+---
+
+## DELETE /transactions/:id
+**Delete Transaction**
+
+### Request
+
+**Headers**:
+- `Cookie: session_id=...` (authenticated)
+
+**Path Parameters**:
+- `id` (integer, required): Transaction ID
+
+### Response
+
+**Success (204 No Content)**:
+```
+(Empty response body)
+```
+
+**Error (404 Not Found)**:
+```json
+{
+  "error": "Transaction not found"
+}
+```
+
+**Error (403 Forbidden)**:
+```json
+{
+  "error": "You don't have permission to delete this transaction"
+}
+```
+
+---
+
+## PUT /transactions/bulk_categorize
+**Bulk Update Transaction Categories**
+
+### Request
+
+**Headers**:
+- `Content-Type: application/json`
+- `Cookie: session_id=...` (authenticated)
+
+**Body**:
+```json
+{
+  "transaction_ids": [1, 2, 3, 5, 8],
+  "category_id": 4
+}
+```
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "updated_count": 5,
+  "message": "5 transactions updated successfully",
+  "transactions": [
+    {
+      "id": 1,
+      "category": {
+        "id": 4,
+        "name": "Entertainment"
+      }
+    }
+  ]
+}
+```
+
+**Error (422 Unprocessable Entity)**:
+```json
+{
+  "errors": {
+    "category": ["type mismatch for transaction IDs: 2, 5"]
+  }
+}
+```
+
+### Validations
+- Transaction IDs must belong to authenticated user
+- Category must exist and be accessible to user
+- Category type must match all transactions (or be 'both')
+- Max 100 transactions per bulk operation
+
+---
+
+## GET /transactions/summary
+**Get Transaction Summary**
+
+### Request
+
+**Headers**:
+- `Cookie: session_id=...` (authenticated)
+
+**Query Parameters**:
+- `start_date` (date, required): Start date (YYYY-MM-DD)
+- `end_date` (date, required): End date (YYYY-MM-DD)
+
+**Example**: `/transactions/summary?start_date=2025-12-01&end_date=2025-12-31`
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "period": {
+    "start_date": "2025-12-01",
+    "end_date": "2025-12-31"
+  },
+  "totals": {
+    "income": "5000.00",
+    "expense": "3200.50",
+    "net": "1799.50"
+  },
+  "transaction_count": {
+    "income": 5,
+    "expense": 42,
+    "total": 47
+  },
+  "by_category": [
+    {
+      "category_id": 1,
+      "category_name": "Groceries",
+      "category_color": "#4CAF50",
+      "total": "800.00",
+      "count": 12,
+      "percentage": 25.0
+    }
+  ]
+}
+```
+
+---
+
+## Response Codes
+
+| Status Code | Description |
+|-------------|-------------|
+| 200 | Success |
+| 201 | Transaction created |
+| 204 | Transaction deleted |
+| 400 | Bad request (invalid parameters) |
+| 401 | Not authenticated |
+| 403 | Forbidden (not owner) |
+| 404 | Transaction not found |
+| 422 | Validation errors |
+| 500 | Internal server error |
+
+---
+
+## Authorization Rules
+
+1. Users can only access their own transactions
+2. All transaction endpoints require authentication
+3. Transactions automatically assigned to current user
+4. Cannot view, edit, or delete other users' transactions
+
+---
+
+## Performance Notes
+
+1. List endpoint paginated (default 50 per page, max 100)
+2. Queries optimized with database indexes on user_id, date, category_id
+3. Eager loading prevents N+1 queries for categories
+4. Summary endpoint uses database aggregations for efficiency

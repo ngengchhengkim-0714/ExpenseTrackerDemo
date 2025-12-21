@@ -1,0 +1,93 @@
+# Reports API Contracts
+
+**Version**: 1.0
+**Base URL**: `/reports`
+
+## Overview
+
+Endpoints for generating financial reports and visualizations.
+
+---
+
+## GET /reports/monthly
+**Monthly Summary Report**
+
+### Request Query Parameters
+- `year` (integer, required): Year (e.g., 2025)
+- `month` (integer, required): Month (1-12)
+
+### Response (200 OK)
+```json
+{
+  "period": {
+    "year": 2025,
+    "month": 12,
+    "month_name": "December"
+  },
+  "summary": {
+    "total_income": "5000.00",
+    "total_expense": "3200.50",
+    "net_savings": "1799.50",
+    "transaction_count": 47
+  },
+  "category_breakdown": [
+    {
+      "category": {
+        "id": 1,
+        "name": "Groceries",
+        "color": "#4CAF50"
+      },
+      "total": "800.00",
+      "count": 12,
+      "percentage": 25.0
+    }
+  ],
+  "daily_totals": [
+    {
+      "date": "2025-12-01",
+      "income": "0.00",
+      "expense": "150.00"
+    }
+  ]
+}
+```
+
+---
+
+## GET /reports/trends
+**Multi-Month Trend Analysis**
+
+### Request Query Parameters
+- `months` (integer, optional): Number of months (default 6, max 12)
+
+### Response (200 OK)
+```json
+{
+  "months": [
+    {
+      "year": 2025,
+      "month": 12,
+      "income": "5000.00",
+      "expense": "3200.50",
+      "net": "1799.50"
+    }
+  ],
+  "totals": {
+    "income": "30000.00",
+    "expense": "19500.00",
+    "net": "10500.00"
+  },
+  "averages": {
+    "monthly_income": "5000.00",
+    "monthly_expense": "3250.00",
+    "monthly_net": "1750.00"
+  }
+}
+```
+
+---
+
+## Performance
+- Reports cached for 5 minutes
+- Cache invalidated on new transaction
+- Database aggregations for efficiency

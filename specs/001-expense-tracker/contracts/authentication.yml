@@ -1,0 +1,258 @@
+# Authentication API Contracts
+
+**Version**: 1.0
+**Base URL**: `/`
+
+## Overview
+
+Authentication endpoints for user registration, login, logout, and password management using Devise.
+
+---
+
+## POST /users/sign_up
+**Register New User**
+
+### Request
+
+**Headers**:
+- `Content-Type: application/json`
+
+**Body**:
+```json
+{
+  "user": {
+    "email": "user@example.com",
+    "password": "SecurePass123!",
+    "password_confirmation": "SecurePass123!",
+    "full_name": "John Doe"
+  }
+}
+```
+
+### Response
+
+**Success (201 Created)**:
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "full_name": "John Doe",
+  "created_at": "2025-12-21T10:00:00Z"
+}
+```
+
+**Error (422 Unprocessable Entity)**:
+```json
+{
+  "errors": {
+    "email": ["has already been taken"],
+    "password": ["must include uppercase, lowercase, number, and special character"]
+  }
+}
+```
+
+### Validations
+- Email: required, unique, valid format
+- Password: required, min 8 chars, complexity requirements
+- Password confirmation: must match password
+- Full name: required, min 2 chars
+
+---
+
+## POST /users/sign_in
+**User Login**
+
+### Request
+
+**Headers**:
+- `Content-Type: application/json`
+
+**Body**:
+```json
+{
+  "user": {
+    "email": "user@example.com",
+    "password": "SecurePass123!"
+  }
+}
+```
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "full_name": "John Doe",
+  "authentication_token": "session_cookie_set"
+}
+```
+
+**Error (401 Unauthorized)**:
+```json
+{
+  "error": "Invalid email or password"
+}
+```
+
+### Notes
+- Session cookie set automatically via Devise
+- Session expires after 30 minutes of inactivity
+- Failed login attempts tracked for security
+
+---
+
+## DELETE /users/sign_out
+**User Logout**
+
+### Request
+
+**Headers**:
+- `Cookie: session_id=...` (authenticated session)
+
+**Body**: None
+
+### Response
+
+**Success (204 No Content)**:
+```
+(Empty response body)
+```
+
+**Error (401 Unauthorized)**:
+```json
+{
+  "error": "Not authenticated"
+}
+```
+
+---
+
+## POST /users/password
+**Request Password Reset**
+
+### Request
+
+**Headers**:
+- `Content-Type: application/json`
+
+**Body**:
+```json
+{
+  "user": {
+    "email": "user@example.com"
+  }
+}
+```
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "message": "Password reset instructions sent to email"
+}
+```
+
+**Note**: Always returns success even if email not found (security best practice)
+
+---
+
+## PUT /users/password
+**Reset Password with Token**
+
+### Request
+
+**Headers**:
+- `Content-Type: application/json`
+
+**Body**:
+```json
+{
+  "user": {
+    "reset_password_token": "abc123xyz...",
+    "password": "NewSecurePass456!",
+    "password_confirmation": "NewSecurePass456!"
+  }
+}
+```
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "message": "Password successfully reset",
+  "redirect_url": "/users/sign_in"
+}
+```
+
+**Error (422 Unprocessable Entity)**:
+```json
+{
+  "errors": {
+    "reset_password_token": ["is invalid or expired"]
+  }
+}
+```
+
+### Notes
+- Token expires after 1 hour
+- Token can only be used once
+- Old sessions invalidated after password reset
+
+---
+
+## GET /users/current
+**Get Current User Info**
+
+### Request
+
+**Headers**:
+- `Cookie: session_id=...` (authenticated session)
+
+### Response
+
+**Success (200 OK)**:
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "full_name": "John Doe",
+  "created_at": "2025-12-21T10:00:00Z",
+  "sign_in_count": 15,
+  "last_sign_in_at": "2025-12-21T09:00:00Z"
+}
+```
+
+**Error (401 Unauthorized)**:
+```json
+{
+  "error": "Not authenticated"
+}
+```
+
+---
+
+## Error Codes
+
+| Status Code | Description |
+|-------------|-------------|
+| 200 | Success |
+| 201 | Resource created |
+| 204 | Success with no content |
+| 401 | Unauthorized (not logged in or invalid credentials) |
+| 422 | Validation errors |
+| 500 | Internal server error |
+
+---
+
+## Security Features
+
+1. **CSRF Protection**: All state-changing requests require CSRF token
+2. **BCrypt Hashing**: Passwords hashed with BCrypt (cost: 12)
+3. **Session Security**: Secure, HTTP-only cookies
+4. **Account Lockout**: Account locked after 10 failed login attempts (30 min lockout)
+5. **Token Expiration**: Password reset tokens expire after 1 hour
+6. **HTTPS Only**: All authentication endpoints require HTTPS in production

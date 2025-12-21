@@ -1,0 +1,107 @@
+# Categories API Contracts
+
+**Version**: 1.0
+**Base URL**: `/categories`
+
+## Overview
+
+CRUD endpoints for managing transaction categories. Users can access default categories and manage custom categories.
+
+---
+
+## GET /categories
+**List Available Categories**
+
+### Response (200 OK)
+```json
+{
+  "categories": [
+    {
+      "id": 1,
+      "name": "Groceries",
+      "color": "#4CAF50",
+      "category_type": "expense",
+      "is_default": true,
+      "transaction_count": 25
+    },
+    {
+      "id": 15,
+      "name": "Custom Category",
+      "color": "#FF5733",
+      "category_type": "income",
+      "is_default": false,
+      "transaction_count": 5
+    }
+  ]
+}
+```
+
+---
+
+## POST /categories
+**Create Custom Category**
+
+### Request
+```json
+{
+  "category": {
+    "name": "Custom Category",
+    "color": "#FF5733",
+    "category_type": "expense"
+  }
+}
+```
+
+### Response (201 Created)
+```json
+{
+  "id": 20,
+  "name": "Custom Category",
+  "color": "#FF5733",
+  "category_type": "expense",
+  "is_default": false
+}
+```
+
+### Validations
+- Name: required, unique per user, max 100 chars
+- Color: optional, hex format (#RRGGBB)
+- Category type: required, 'income', 'expense', or 'both'
+
+---
+
+## PUT /categories/:id
+**Update Custom Category**
+
+### Request
+```json
+{
+  "category": {
+    "name": "Updated Name",
+    "color": "#00FF00"
+  }
+}
+```
+
+### Notes
+- Can only update custom categories (not defaults)
+- Name must remain unique per user
+
+---
+
+## DELETE /categories/:id
+**Delete Custom Category**
+
+### Response (204 No Content)
+
+### Error (422 Unprocessable Entity)
+```json
+{
+  "error": "Cannot delete category with existing transactions"
+}
+```
+
+### Notes
+- Can only delete custom categories
+- Fails if transactions assigned to category
+- Recommend reassigning transactions first
