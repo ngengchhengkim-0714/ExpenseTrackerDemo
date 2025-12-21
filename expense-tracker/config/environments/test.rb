@@ -36,6 +36,7 @@ Rails.application.configure do
 
   # Disable host authorization check in test environment
   config.hosts.clear
+  config.host_authorization = { exclude: ->(request) { true } }
 
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test

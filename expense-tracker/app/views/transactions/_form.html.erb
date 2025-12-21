@@ -1,0 +1,87 @@
+<div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" data-controller="transaction-form">
+  <%= form_with(model: transaction, local: true, class: "space-y-6", data: { action: "submit->transaction-form#validateAmount" }) do |form| %>
+    <% if transaction.errors.any? %>
+      <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+              <%= pluralize(transaction.errors.count, "error") %> prohibited this transaction from being saved:
+            </h3>
+            <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+              <% transaction.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div>
+        <%= form.label :amount, class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <div class="relative rounded-md shadow-sm">
+          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <span class="text-gray-500 sm:text-sm">$</span>
+          </div>
+          <%= form.number_field :amount,
+              step: 0.01,
+              min: 0.01,
+              placeholder: "0.00",
+              class: "block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm #{'border-red-300' if transaction.errors[:amount].any?}",
+              required: true,
+              data: { transaction_form_target: "amount", action: "blur->transaction-form#formatAmount input->transaction-form#updateAmountDisplay" } %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.label :transaction_type, "Type", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.select :transaction_type,
+            options_for_select([['Income', 'income'], ['Expense', 'expense']], transaction.transaction_type),
+            {},
+            class: "block ,
+            data: { transaction_form_target: "typeSelector", action: "change->transaction-form#updateTypeStyle" }w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm #{'border-red-300' if transaction.errors[:transaction_type].any?}",
+            required: true %>
+      </div>
+
+      <div>
+        <%= form.label :date, class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.date_field :date,
+            max: Date.today,
+            class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm #{'border-red-300' if transaction.errors[:date].any?}",
+            required: true %>
+      </div>
+
+      <div>
+        <%= form.label :category_id, "Category", class: "block text-sm font-medium text-gray-700 mb-2" %>
+        <%= form.collection_select :category_id,
+            current_user.categories.order(:name),
+            :id,
+            :name,
+            { prompt: "Select a category" },
+            class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm #{'border-red-300' if transaction.errors[:category_id].any?}",
+            required: true %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.text_area :description,
+          rows: 3,
+          maxlength: 500,
+          placeholder: "Enter transaction description (optional)",
+          class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm #{'border-red-300' if transaction.errors[:description].any?}" %>
+      <p class="mt-2 text-sm text-gray-500">Maximum 500 characters</p>
+    </div>
+
+    <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+      <%= link_to "Cancel", transactions_path, class: "inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      <%= form.submit class: "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 cursor-pointer" %>
+    </div>
+  <% end %>
+</div>

@@ -10,5 +10,25 @@
         ".specify/scripts/bash/": true,
         ".specify/scripts/powershell/": true
     },
-    "github.copilot.chat.newWorkspace.useContext7": true
+    "github.copilot.chat.newWorkspace.useContext7": true,
+    "files.watcherExclude": {
+        "**/node_modules/**": true,
+        "**/log/**": true,
+        "**/tmp/**": true,
+        "**/storage/**": true,
+        "**/vendor/**": true,
+        "**/coverage/**": true
+    },
+
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/log": true,
+        "**/tmp": true,
+        "**/storage": true,
+        "**/vendor": true,
+        "**/coverage": true
+    },
+    "editor.minimap.enabled": false,
+    "editor.codeLens": false,
+    "editor.inlineSuggest.enabled": true
 }
