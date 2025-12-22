@@ -6,8 +6,8 @@ module Reports
 
     def initialize(user, start_date: nil, end_date: nil)
       @user = user
-      @start_date = start_date || Date.today.beginning_of_month
-      @end_date = end_date || Date.today.end_of_month
+      @start_date = start_date || Time.zone.today.beginning_of_month
+      @end_date = end_date || Time.zone.today.end_of_month
     end
 
     def call
@@ -52,13 +52,14 @@ module Reports
 
     def savings_rate
       return 0 if total_income.zero?
+
       ((net_savings / total_income) * 100).round(2)
     end
 
     def income_by_category
       income_transactions
         .joins(:category)
-        .group('categories.name')
+        .group("categories.name")
         .sum(:amount)
         .sort_by { |_, amount| -amount }
     end
@@ -66,7 +67,7 @@ module Reports
     def expenses_by_category
       expense_transactions
         .joins(:category)
-        .group('categories.name')
+        .group("categories.name")
         .sum(:amount)
         .sort_by { |_, amount| -amount }
     end

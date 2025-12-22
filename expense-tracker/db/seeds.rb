@@ -5,7 +5,7 @@
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
 # Default Categories
-puts "Creating default categories..."
+Rails.logger.debug "Creating default categories..."
 
 default_categories = [
   # Expense Categories
@@ -31,28 +31,32 @@ default_categories = [
 ]
 
 default_categories.each do |category_attrs|
+  next if Category.exists?(name: category_attrs[:name], user_id: nil)
+
   Category.create!(
     name: category_attrs[:name],
     category_type: category_attrs[:category_type],
     color: category_attrs[:color],
     user_id: nil,
     is_default: true
-  ) unless Category.exists?(name: category_attrs[:name], user_id: nil)
+  )
 end
 
-puts "Created #{Category.default_categories.count} default categories"
+Rails.logger.debug { "Created #{Category.default_categories.count} default categories" }
 
 # Demo Users and Transactions (only in development)
 if Rails.env.development?
   require "faker"
 
-  puts "\nCreating demo users and transactions..."
+  Rails.logger.debug "\nCreating demo users and transactions..."
 
   NUM_DEMO_USERS = 10
   MIN_TRANSACTIONS = 50
   MAX_TRANSACTIONS = 200
-  START_DATE = 6.months.ago.to_date
-  END_DATE = Date.today
+  def self.start_date
+    6.months.ago.to_date
+  end
+  END_DATE = Time.zone.today
 
   NUM_DEMO_USERS.times do |i|
     user = User.find_or_create_by!(email: "demo#{i + 1}@example.com") do |u|
@@ -82,11 +86,11 @@ if Rails.env.development?
       )
     end
 
-    puts "Created user: #{user.email} with #{transaction_count} transactions"
+    Rails.logger.debug { "Created user: #{user.email} with #{transaction_count} transactions" }
   end
 
-  puts "\nDemo data created successfully!"
-  puts "Login with any of these accounts:"
-  puts "  Email: demo1@example.com to demo#{NUM_DEMO_USERS}@example.com"
-  puts "  Password: Password123!"
+  Rails.logger.debug "\nDemo data created successfully!"
+  Rails.logger.debug "Login with any of these accounts:"
+  Rails.logger.debug { "  Email: demo1@example.com to demo#{NUM_DEMO_USERS}@example.com" }
+  Rails.logger.debug "  Password: Password123!"
 end

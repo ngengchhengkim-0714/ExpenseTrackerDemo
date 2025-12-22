@@ -21,8 +21,9 @@ class User < ApplicationRecord
   def password_complexity
     return if password.blank?
 
-    unless password.match?(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
-      errors.add :password, "must include at least one lowercase letter, one uppercase letter, one digit, and one special character"
-    end
+    return if password.match?(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
+
+    errors.add :password,
+               "must include at least one lowercase letter, one uppercase letter, one digit, and one special character"
   end
 end

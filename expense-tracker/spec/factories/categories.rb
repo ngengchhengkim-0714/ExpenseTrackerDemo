@@ -9,11 +9,11 @@ FactoryBot.define do
     user
 
     trait :income do
-      category_type { 'income' }
+      category_type { "income" }
     end
 
     trait :expense do
-      category_type { 'expense' }
+      category_type { "expense" }
     end
 
     trait :default do

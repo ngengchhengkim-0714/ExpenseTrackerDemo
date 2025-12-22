@@ -13,11 +13,14 @@ class TransactionsController < ApplicationController
     @transactions = @transactions.page(params[:page]).per(20)
   end
 
-  def show
-  end
+  def show; end
 
   def new
-    @transaction = current_user.transactions.build(date: Date.today)
+    @transaction = current_user.transactions.build(date: Time.zone.today)
+    @categories = current_user.categories
+  end
+
+  def edit
     @categories = current_user.categories
   end
 
@@ -25,20 +28,16 @@ class TransactionsController < ApplicationController
     @transaction = current_user.transactions.build(transaction_params)
 
     if @transaction.save
-      redirect_to transactions_path, notice: 'Transaction was successfully created.'
+      redirect_to transactions_path, notice: "Transaction was successfully created."
     else
       @categories = current_user.categories
       render :new, status: :unprocessable_content
     end
   end
 
-  def edit
-    @categories = current_user.categories
-  end
-
   def update
     if @transaction.update(transaction_params)
-      redirect_to transactions_path, notice: 'Transaction was successfully updated.'
+      redirect_to transactions_path, notice: "Transaction was successfully updated."
     else
       @categories = current_user.categories
       render :edit, status: :unprocessable_content
@@ -47,12 +46,12 @@ class TransactionsController < ApplicationController
 
   def destroy
     @transaction.destroy
-    redirect_to transactions_path, notice: 'Transaction was successfully deleted.'
+    redirect_to transactions_path, notice: "Transaction was successfully deleted."
   end
 
   def summary
-    @start_date = params[:start_date]&.to_date || Date.today.beginning_of_month
-    @end_date = params[:end_date]&.to_date || Date.today.end_of_month
+    @start_date = params[:start_date]&.to_date || Time.zone.today.beginning_of_month
+    @end_date = params[:end_date]&.to_date || Time.zone.today.end_of_month
 
     transactions = current_user.transactions.by_date_range(@start_date, @end_date)
 
@@ -62,14 +61,14 @@ class TransactionsController < ApplicationController
     @transaction_count = transactions.count
 
     @income_by_category = transactions.income
-                                     .joins(:category)
-                                     .group('categories.name')
-                                     .sum(:amount)
+                                      .joins(:category)
+                                      .group("categories.name")
+                                      .sum(:amount)
 
     @expenses_by_category = transactions.expense
-                                       .joins(:category)
-                                       .group('categories.name')
-                                       .sum(:amount)
+                                        .joins(:category)
+                                        .group("categories.name")
+                                        .sum(:amount)
   end
 
   private
@@ -95,7 +94,7 @@ class TransactionsController < ApplicationController
     end
 
     # Search in description
-    transactions = transactions.where('description LIKE ?', "%#{params[:search]}%") if params[:search].present?
+    transactions = transactions.where("description LIKE ?", "%#{params[:search]}%") if params[:search].present?
 
     transactions
   end

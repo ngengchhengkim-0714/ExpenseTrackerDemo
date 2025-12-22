@@ -20,7 +20,7 @@ class Transaction < ApplicationRecord
   private
 
   def date_not_in_future
-    return unless date.present? && date > Date.today
+    return unless date.present? && date > Time.zone.today
 
     errors.add(:date, "cannot be in the future")
   end

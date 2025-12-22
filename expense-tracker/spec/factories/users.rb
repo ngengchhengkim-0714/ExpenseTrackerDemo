@@ -4,8 +4,8 @@ FactoryBot.define do
   factory :user do
     sequence(:email) { |n| "user#{n}@example.com" }
     full_name { Faker::Name.name }
-    password { 'Password123!' }
-    password_confirmation { 'Password123!' }
+    password { "Password123!" }
+    password_confirmation { "Password123!" }
 
     trait :with_transactions do
       after(:create) do |user|

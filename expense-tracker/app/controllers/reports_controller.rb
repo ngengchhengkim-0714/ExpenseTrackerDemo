@@ -2,7 +2,7 @@
 
 class ReportsController < ApplicationController
   def index
-    @current_month = params[:month]&.to_date || Date.today.beginning_of_month
+    @current_month = params[:month]&.to_date || Time.zone.today.beginning_of_month
     @summary = Reports::MonthlySummaryService.new(
       current_user,
       start_date: @current_month.beginning_of_month,
@@ -11,8 +11,8 @@ class ReportsController < ApplicationController
   end
 
   def monthly
-    start_date = params[:start_date]&.to_date || Date.today.beginning_of_month
-    end_date = params[:end_date]&.to_date || Date.today.end_of_month
+    start_date = params[:start_date]&.to_date || Time.zone.today.beginning_of_month
+    end_date = params[:end_date]&.to_date || Time.zone.today.end_of_month
 
     @summary = Reports::MonthlySummaryService.new(
       current_user,
