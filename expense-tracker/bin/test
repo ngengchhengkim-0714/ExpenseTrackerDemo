@@ -1,0 +1,4 @@
+#!/bin/bash
+# Test runner script that ensures correct Rails environment
+
+exec docker exec -e RAILS_ENV=test expense-tracker-web-1 bundle exec rspec "$@"

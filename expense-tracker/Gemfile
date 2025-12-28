@@ -42,6 +42,7 @@ gem "jbuilder"
 
 # Authentication
 gem "devise", "~> 4.9"
+gem "responders", "~> 3.1" # Required for Devise Turbo/Hotwire support
 
 # Charts for reports
 gem "chartkick", "~> 5.0"

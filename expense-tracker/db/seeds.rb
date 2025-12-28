@@ -53,9 +53,7 @@ if Rails.env.development?
   NUM_DEMO_USERS = 10
   MIN_TRANSACTIONS = 50
   MAX_TRANSACTIONS = 200
-  def self.start_date
-    6.months.ago.to_date
-  end
+  START_DATE = 6.months.ago.to_date
   END_DATE = Time.zone.today
 
   NUM_DEMO_USERS.times do |i|

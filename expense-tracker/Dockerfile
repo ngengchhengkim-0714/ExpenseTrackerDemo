@@ -18,7 +18,14 @@ RUN apt-get update -qq && \
     curl \
     default-mysql-client \
     nodejs \
-    npm && \
+    npm \
+    wget \
+    gnupg && \
+    # Install Chrome for system tests
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
+    apt-get update -qq && \
+    apt-get install --no-install-recommends -y google-chrome-stable && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install application gems
@@ -28,11 +35,21 @@ RUN bundle install
 # Copy application code
 COPY . .
 
+# Ensure builds directory exists and build Tailwind CSS
+RUN mkdir -p app/assets/builds && \
+    bin/rails tailwindcss:build
+
+# Precompile assets for production
+RUN SECRET_KEY_BASE=dummy bin/rails assets:precompile
+
 # Create directories for Rails
 RUN mkdir -p tmp/pids log storage
 
 # Expose port 3000
 EXPOSE 3000
+
+# Set entrypoint for database migrations
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start the server by default
 CMD ["./bin/rails", "server", "-b", "0.0.0.0"]

@@ -46,12 +46,25 @@ rescue ActiveRecord::PendingMigrationError => e
   abort e.to_s.strip
 end
 RSpec.configure do |config|
+  # Configure Capybara for headless Chrome in Docker
+  config.before(:each, type: :system) do
+    driven_by :selenium, using: :headless_chrome, screen_size: [1400, 1400] do |options|
+      options.add_argument('--headless')
+      options.add_argument('--no-sandbox')
+      options.add_argument('--disable-dev-shm-usage')
+      options.add_argument('--disable-gpu')
+    end
+  end
+
   # Include FactoryBot methods
   config.include FactoryBot::Syntax::Methods
 
   # Include Devise test helpers
   config.include Devise::Test::IntegrationHelpers, type: :request
   config.include Devise::Test::IntegrationHelpers, type: :system
+
+  # Include ActiveSupport TimeHelpers for time travel in tests
+  config.include ActiveSupport::Testing::TimeHelpers
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [

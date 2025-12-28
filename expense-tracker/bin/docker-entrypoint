@@ -1,8 +1,20 @@
 #!/bin/bash -e
 
+# Wait for database to be ready
+until mysqladmin ping -h"${DATABASE_HOST}" --silent; do
+  echo "Waiting for database to be ready..."
+  sleep 2
+done
+
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
+  ./bin/rails db:create || true
+  ./bin/rails db:migrate || true
+  
+  # Build Tailwind CSS if in development
+  if [ "${RAILS_ENV}" == "development" ]; then
+    ./bin/rails tailwindcss:build
+  fi
 fi
 
 exec "${@}"

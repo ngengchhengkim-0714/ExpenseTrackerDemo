@@ -12,26 +12,32 @@
 
 ActiveRecord::Schema[7.1].define(version: 2025_12_21_175506) do
   create_table "categories", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
-    t.string "name"
-    t.string "category_type"
-    t.string "color"
-    t.boolean "is_default"
+    t.string "name", null: false
+    t.string "category_type", null: false
+    t.string "color", default: "#6B7280"
+    t.boolean "is_default", default: false, null: false
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["category_type"], name: "index_categories_on_category_type"
+    t.index ["is_default"], name: "index_categories_on_is_default"
+    t.index ["user_id", "name"], name: "index_categories_on_user_id_and_name", unique: true
     t.index ["user_id"], name: "index_categories_on_user_id"
   end
 
   create_table "transactions", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.decimal "amount", precision: 10, scale: 2, null: false
     t.text "description"
-    t.string "transaction_type"
-    t.date "date"
+    t.string "transaction_type", null: false
+    t.date "date", null: false
     t.bigint "user_id", null: false
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_transactions_on_category_id"
+    t.index ["date"], name: "index_transactions_on_date"
+    t.index ["transaction_type"], name: "index_transactions_on_transaction_type"
+    t.index ["user_id", "date"], name: "index_transactions_on_user_id_and_date"
     t.index ["user_id"], name: "index_transactions_on_user_id"
   end
 

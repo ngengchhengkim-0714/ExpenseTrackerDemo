@@ -37,6 +37,7 @@ Rails.application.configure do
   # Disable host authorization check in test environment
   config.hosts.clear
   config.host_authorization = { exclude: ->(request) { true } }
+  config.action_dispatch.default_headers = { 'X-Frame-Options' => 'ALLOWALL' }
 
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
@@ -65,4 +66,7 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Devise mailer configuration for test environment
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 end

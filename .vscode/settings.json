@@ -30,5 +30,7 @@
     },
     "editor.minimap.enabled": false,
     "editor.codeLens": false,
-    "editor.inlineSuggest.enabled": true
+    "editor.inlineSuggest.enabled": true,
+    "github.copilot.advanced": {},
+    "chat.mcp.access": "all"
 }
