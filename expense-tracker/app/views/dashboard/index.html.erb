@@ -1,8 +1,222 @@
 <div class="min-h-screen bg-gray-50">
   <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <!-- Header -->
     <div class="px-4 py-6 sm:px-0">
-      <h1 class="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
-      <p class="text-gray-600">Welcome to your Personal Finance Tracker!</p>
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <p class="mt-1 text-sm text-gray-500">
+            Financial Overview for <%= Date.today.strftime("%B %Y") %>
+          </p>
+        </div>
+        <%= link_to "Add Transaction", new_transaction_path, class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-3 mb-8">
+        <!-- Income Card -->
+        <div class="income-card bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total Income</dt>
+                  <dd class="text-2xl font-semibold text-gray-900">
+                    <%= number_to_currency(@total_income) %>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expenses Card -->
+        <div class="expenses-card bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Total Expenses</dt>
+                  <dd class="text-2xl font-semibold text-gray-900">
+                    <%= number_to_currency(@total_expenses) %>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Balance Card -->
+        <div class="balance-card bg-white overflow-hidden shadow rounded-lg">
+          <div class="p-5">
+            <div class="flex items-center">
+              <div class="flex-shrink-0">
+                <svg class="h-6 w-6 <%= @balance >= 0 ? 'text-blue-600' : 'text-red-600' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div class="ml-5 w-0 flex-1">
+                <dl>
+                  <dt class="text-sm font-medium text-gray-500 truncate">Balance</dt>
+                  <dd class="text-2xl font-semibold <%= @balance >= 0 ? 'text-green-600' : 'text-red-600' %>">
+                    <%= number_to_currency(@balance) %>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two Column Layout -->
+      <div class="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <!-- Recent Transactions -->
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Recent Transactions</h3>
+              <%= link_to "View All", transactions_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+            </div>
+            
+            <% if @recent_transactions.any? %>
+              <div class="recent-transactions flow-root">
+                <ul role="list" class="-my-5 divide-y divide-gray-200">
+                  <% @recent_transactions.each do |transaction| %>
+                    <li class="py-4 transaction-item">
+                      <div class="flex items-center space-x-4">
+                        <div class="flex-1 min-w-0">
+                          <p class="text-sm font-medium text-gray-900 truncate">
+                            <%= transaction.description %>
+                          </p>
+                          <p class="text-sm text-gray-500">
+                            <%= transaction.date.strftime("%b %d, %Y") %>
+                            <% if transaction.category %>
+                              · <span class="text-xs px-2 py-1 rounded-full bg-gray-100"><%= transaction.category.name %></span>
+                            <% end %>
+                          </p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                          <% if transaction.transaction_type == "income" %>
+                            <span class="income-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Income
+                            </span>
+                            <span class="text-sm font-semibold text-green-600">
+                              +<%= number_to_currency(transaction.amount) %>
+                            </span>
+                          <% else %>
+                            <span class="expense-badge inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              Expense
+                            </span>
+                            <span class="text-sm font-semibold text-red-600">
+                              -<%= number_to_currency(transaction.amount) %>
+                            </span>
+                          <% end %>
+                        </div>
+                      </div>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            <% else %>
+              <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No transactions</h3>
+                <p class="mt-1 text-sm text-gray-500">Get started by creating a new transaction.</p>
+                <div class="mt-6">
+                  <%= link_to "Add Transaction", new_transaction_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Top Spending Categories -->
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Top Spending Categories</h3>
+              <%= link_to "View Reports", reports_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+            </div>
+            
+            <% if @top_categories.any? %>
+              <div class="space-y-4">
+                <% @top_categories.each do |category_name, amount| %>
+                  <% percentage = @total_expenses > 0 ? (amount / @total_expenses * 100).round(1) : 0 %>
+                  <div>
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-sm font-medium text-gray-700"><%= category_name %></span>
+                      <span class="text-sm text-gray-500">
+                        <%= number_to_currency(amount) %> (<%= percentage %>%)
+                      </span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                      <div class="bg-indigo-600 h-2 rounded-full" style="width: <%= percentage %>%"></div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% else %>
+              <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No expenses yet</h3>
+                <p class="mt-1 text-sm text-gray-500">Expense categories will appear here once you add some.</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="mt-8 bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <%= link_to new_transaction_path, class: "flex items-center p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition" do %>
+              <svg class="h-8 w-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-indigo-900">Add Transaction</p>
+                <p class="text-xs text-indigo-700">Record income or expense</p>
+              </div>
+            <% end %>
+
+            <%= link_to transactions_path, class: "flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition" do %>
+              <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-green-900">View All Transactions</p>
+                <p class="text-xs text-green-700">Browse transaction history</p>
+              </div>
+            <% end %>
+
+            <%= link_to reports_path, class: "flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition" do %>
+              <svg class="h-8 w-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-purple-900">View Reports</p>
+                <p class="text-xs text-purple-700">Analyze spending patterns</p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

@@ -44,9 +44,9 @@
         <%= form.select :transaction_type,
             options_for_select([['Income', 'income'], ['Expense', 'expense']], transaction.transaction_type),
             {},
-            class: "block ,
-            data: { transaction_form_target: "typeSelector", action: "change->transaction-form#updateTypeStyle" }w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm #{'border-red-300' if transaction.errors[:transaction_type].any?}",
-            required: true %>
+            class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm #{'border-red-300' if transaction.errors[:transaction_type].any?}",
+            required: true,
+            data: { transaction_form_target: "typeSelector", action: "change->transaction-form#updateTypeStyle" } %>
       </div>
 
       <div>
